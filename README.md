@@ -93,7 +93,7 @@ print(result.estimated_payable) # payable - withheld (if positive)
 .venv/bin/python -m pytest -q
 ```
 
-To add a new financial year, add one line to `RATES_BY_YEAR` in
+To add a new financial year, add a `RatesXXXX_XX` class in
 `src/tax_calculator/rates.py` plus tests — the calculator and CLI pick it up
 via the `year` argument.
 

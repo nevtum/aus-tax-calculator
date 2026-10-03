@@ -6,7 +6,7 @@ All years below exclude Medicare levy/surcharge/offsets from the *brackets*;
 the flat 2% Medicare levy is applied separately in the calculator.
 
 What typically changes year to year (and where each lives in this codebase):
-  - Bracket rates / thresholds / base amounts -> YearRates.brackets below.
+  - Bracket rates / thresholds / base amounts -> one RatesXXXX_XX class below.
   - Medicare levy rate / low-income thresholds -> medicare_levy_rate below
     (low-income reduction NOT modelled; flat rate is exact above the
     shade-out: singles $35,013 in 2025-26, higher for families/seniors).
@@ -68,17 +68,58 @@ class YearRates:
     medicare_levy_rate: float = DEFAULT_MEDICARE_LEVY_RATE
 
 
-# To add a new financial year: add one line here (plus tests). Nothing else
-# needs to change — the calculator and CLI select via `year`.
+@dataclass(frozen=True)
+class Rates2024_25(YearRates):
+    """Resident rates for FY 2024-25 (modified stage 3: 16% second bracket)."""
+
+    financial_year: str = "2024-25"
+    income_year: str = "1 July 2024 – 30 June 2025"
+    brackets: tuple[Bracket, ...] = _stage3_brackets(0.16)
+
+
+@dataclass(frozen=True)
+class Rates2025_26(YearRates):
+    """Resident rates for FY 2025-26 (unchanged from 2024-25)."""
+
+    financial_year: str = "2025-26"
+    income_year: str = "1 July 2025 – 30 June 2026"
+    brackets: tuple[Bracket, ...] = _stage3_brackets(0.16)
+
+
+@dataclass(frozen=True)
+class Rates2026_27(YearRates):
+    """Resident rates for FY 2026-27 (second bracket cut to 15%).
+
+    Legislated by the Treasury Laws Amendment (More Cost of Living
+    Relief) Act 2025.
+    """
+
+    financial_year: str = "2026-27"
+    income_year: str = "1 July 2026 – 30 June 2027"
+    brackets: tuple[Bracket, ...] = _stage3_brackets(0.15)
+
+
+@dataclass(frozen=True)
+class Rates2027_28(YearRates):
+    """Resident rates for FY 2027-28 (second bracket cut to 14%).
+
+    Legislated by the Treasury Laws Amendment (More Cost of Living
+    Relief) Act 2025.
+    """
+
+    financial_year: str = "2027-28"
+    income_year: str = "1 July 2027 – 30 June 2028"
+    brackets: tuple[Bracket, ...] = _stage3_brackets(0.14)
+
+
+# To add a new financial year: add one RatesXXXX_XX class above, one line
+# below, and tests. Nothing else needs to change — the calculator and CLI
+# select via `year`.
 RATES_BY_YEAR: dict[str, YearRates] = {
-    "2024-25": YearRates("2024-25", "1 July 2024 – 30 June 2025",
-                         _stage3_brackets(0.16)),
-    "2025-26": YearRates("2025-26", "1 July 2025 – 30 June 2026",
-                         _stage3_brackets(0.16)),
-    "2026-27": YearRates("2026-27", "1 July 2026 – 30 June 2027",
-                         _stage3_brackets(0.15)),
-    "2027-28": YearRates("2027-28", "1 July 2027 – 30 June 2028",
-                         _stage3_brackets(0.14)),
+    "2024-25": Rates2024_25(),
+    "2025-26": Rates2025_26(),
+    "2026-27": Rates2026_27(),
+    "2027-28": Rates2027_28(),
 }
 
 SUPPORTED_YEARS: tuple[str, ...] = tuple(RATES_BY_YEAR)
