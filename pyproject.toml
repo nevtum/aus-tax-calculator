@@ -1,0 +1,20 @@
+[project]
+name = "aus-tax-calculator"
+version = "1.0.0"
+description = "Australian resident individual income tax calculator for 2025-26 (income tax + flat 2% Medicare levy)"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Tax Calculator" }]
+
+[project.scripts]
+aus-tax = "tax_calculator.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
